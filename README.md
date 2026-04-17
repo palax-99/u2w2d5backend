@@ -14,6 +14,10 @@
 
 [Dato_DB!](images/elemento%20nella%20tabella%20dipendenti,%20fatto%20col%20metodo%20POST.png)
 
+## METODO GET CON L'IMPAGINAZIONE
+
+[Metodo_get_con_impaginazione!](images/METODO%20GET%20con%20l'impaginazione.png)
+
 ## METODO PUT
 
 [Metodo_PUT!](images/testato%20il%20metodo%20PUT%20di%20dipendenti.png)
@@ -38,3 +42,13 @@
 ## DATABASE PRENOTAZIONI
 
 [Database_prenotazione!](images/database%20prenotazione.png)
+
+## METODO PATCH CON CLOUDINARY
+
+[Cloudinary!](images/Metodo%20PATCH%20con%20cloudinary.png)
+[Dipendente_aggionato_con_successo!](images/Dipendente%20aggiornato%20con%20successo.png)
+
+## DIAGRAMMI ER ERD
+
+[Diagramma_ER!](images/diagramma-U2-W2-D5.jpg)
+[Diagramma_ERD!](images/Diagramma%20ERD-U2-W2-D5-BACKEND.png)
