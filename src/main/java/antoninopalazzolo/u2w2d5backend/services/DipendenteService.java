@@ -2,11 +2,18 @@ package antoninopalazzolo.u2w2d5backend.services;
 
 import antoninopalazzolo.u2w2d5backend.entities.Dipendente;
 import antoninopalazzolo.u2w2d5backend.exceptions.BadRequestException;
+import antoninopalazzolo.u2w2d5backend.exceptions.NotFoundException;
 import antoninopalazzolo.u2w2d5backend.payloads.DipendenteDTO;
 import antoninopalazzolo.u2w2d5backend.repositories.DipendenteRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -36,5 +43,53 @@ public class DipendenteService {
         //mi faccio un log per controllare, se tutto sia andato bene!
         return dipendenteSalvato;
         //mi ritorno il dipendente salvato!
+    }
+
+    public Page<Dipendente> findAll(int page, int size, String sortBy) {
+        // Pageable è l'oggetto che contiene le istruzioni di paginazione
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+
+        // findAll con il Pageable fa la query con paginazione automatica, che figata comunque!
+        return this.dipendenteRepository.findAll(pageable);
+    }
+
+    public Dipendente findByIdDipendente(UUID id) {
+        // orElseThrow cerca il dipendente per id
+        // se non lo trova lancia automaticamente NotFoundException
+        // se lo trova lo restituisce
+        Dipendente found = this.dipendenteRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(id));
+        log.info("Dipendente con id " + id + " trovato!");
+        return found;
+    }
+
+    public Dipendente findByIdAndUpdate(UUID id, DipendenteDTO body) {
+        // Trovo il dipendente, se non esiste lancio NotFoundException
+        Dipendente found = this.findByIdDipendente(id);
+
+        // Controllo email solo se sto cambiando email
+        if (!found.getEmail().equals(body.email()) && this.dipendenteRepository.existsByEmail(body.email()))
+            throw new BadRequestException("L'email " + body.email() + " è già in uso!");
+
+        // Controllo username solo se sto cambiando username
+        if (!found.getUsername().equals(body.username()) && this.dipendenteRepository.existsByUsername(body.username()))
+            throw new BadRequestException("L'username " + body.username() + " è già in uso!");
+
+        // Aggiorno i campi
+        found.setUsername(body.username());
+        found.setName(body.name());
+        found.setSurname(body.surname());
+        found.setEmail(body.email());
+        found.setAvatar("https://ui-avatars.com/api?name=" + body.name() + "+" + body.surname());
+
+        log.info("Dipendente con id " + id + " aggiornato!");
+        return this.dipendenteRepository.save(found);
+    }
+
+    public void findByIdAndDelete(UUID id) {
+        // Trovo il dipendente, se non esiste lancio NotFoundException
+        Dipendente found = this.findByIdDipendente(id);
+        this.dipendenteRepository.delete(found);
+        log.info("Dipendente con id " + id + " eliminato!");
     }
 }
