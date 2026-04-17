@@ -26,3 +26,15 @@
 
 [Metodo_cambiaStato!](images/dato%20che%20utilizzerò%20per%20testare%20il%20metodo%20di%20cambia%20stato.png)
 [Metodo_cambiaStatoaFatto](images/stato%20cambiato.png)
+
+## METODO POST DI PRENOTAZIONE
+
+[Metodo_post_prenotazione!](images/METODO%20POST%20di%20prenotazione.png)
+
+## GESTIONE ERRORE DI PRENOTAZIONE
+
+[Gestione_errore_prenotazione!](images/Gestione%20errore%20prenotazione.png)
+
+## DATABASE PRENOTAZIONI
+
+[Database_prenotazione!](images/database%20prenotazione.png)
