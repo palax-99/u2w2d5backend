@@ -5,6 +5,8 @@ import antoninopalazzolo.u2w2d5backend.exceptions.BadRequestException;
 import antoninopalazzolo.u2w2d5backend.exceptions.NotFoundException;
 import antoninopalazzolo.u2w2d5backend.payloads.DipendenteDTO;
 import antoninopalazzolo.u2w2d5backend.repositories.DipendenteRepository;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,16 +14,22 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
 @Slf4j
 public class DipendenteService {
     private final DipendenteRepository dipendenteRepository;
+    private final Cloudinary cloudinaryConfig;
 
     @Autowired // Constructor injection, potevo farea anche la field volendo ma è sempre meglio usare questa
-    public DipendenteService(DipendenteRepository dipendenteRepository) {
+    public DipendenteService(DipendenteRepository dipendenteRepository, Cloudinary cloudinaryConfig) {
+        this.cloudinaryConfig = cloudinaryConfig;
+        // aggiungo cloudinaryConfig nel costruttore
         this.dipendenteRepository = dipendenteRepository;
     }
 
@@ -91,5 +99,25 @@ public class DipendenteService {
         Dipendente found = this.findByIdDipendente(id);
         this.dipendenteRepository.delete(found);
         log.info("Dipendente con id " + id + " eliminato!");
+    }
+
+    public Dipendente uploadAvatar(UUID id, MultipartFile file) throws IOException {
+        // 1. Trovo il dipendente, se non esiste lancio NotFoundException
+        Dipendente found = this.findByIdDipendente(id);
+
+        // 2. Upload del file su Cloudinary
+        // file.getBytes() converte il file in bytes — formato che Cloudinary accetta
+        Map result = cloudinaryConfig.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+
+        // 3. Cloudinary ci restituisce una Map con varie info
+        // "secure_url" è l'URL pubblico dell'immagine caricata
+        String url = (String) result.get("secure_url");
+
+        // 4. Aggiorno l'avatar del dipendente con l'URL di Cloudinary
+        found.setAvatar(url);
+
+        // 5. Salvo e ritorno il dipendente aggiornato
+        log.info("Avatar del dipendente " + id + " aggiornato!");
+        return this.dipendenteRepository.save(found);
     }
 }

@@ -33,4 +33,5 @@ public class PrenotazioneController {
         }
         return prenotazioneService.savePrenotazione(body);
     }
+
 }
